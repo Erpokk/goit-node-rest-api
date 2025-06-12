@@ -6,7 +6,7 @@ import {
   createContactController,
   updateContactController,
 } from "../controllers/contactsControllers.js";
-import validateBody from "../helpers/validateBody.js";
+import { validateBody } from "../helpers/index.js";
 import { createContactSchema, updateContactSchema } from "../schemas/contactsSchemas.js";
 
 const contactsRouter = express.Router();

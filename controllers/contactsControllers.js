@@ -1,84 +1,58 @@
 import { listContacts, getContactById, removeContact, addContact, updateContact } from "../services/contactsServices.js";
+import { ctrlWrapper, HttpError } from "../helpers/index.js";
 
 export const getAllContactsController = async (req, res) => {
-    const contacts = await listContacts(); 
-    res.status(200).json({
-        message: "Contacts fetched successfully",
-        status: "success",
-        data: {
-            contacts
-        }
-    });
+    const result = await listContacts();
+    res.status(200).json(result);
 };
 
 export const getOneContactController = async (req, res) => {
     const { id } = req.params;
-    const contact = await getContactById(id);
-    const message = contact ? `Contact with id: ${id} fetched successfully` : `Contact with id: ${id} not found`;
+    const result = await getContactById(id);
 
-    if (!contact) {
-        return res.status(404).json({
-            message,
-            status: "error",
-        });
+    if (!result) {
+        throw HttpError(404, `Not found`);
     }
-    res.status(200).json({
-        message,
-        status: "success",
-        data: {
-            contact
-        }
-    });
+    res.status(200).json(result);
 };
 
 export const deleteContactController = async (req, res) => {
-    const {id } = req.params;
-    const contact = await removeContact(id);
-    const message = contact ? `Contact with id: ${id} deleted successfully` : `Contact with id: ${id} not found`;
-    if (!contact) {
-        return res.status(404).json({
-            message,
-            status: "error",
-        });
+    const { id } = req.params;
+    const result = await removeContact(id);
+    if (!result) {
+        throw HttpError(404, `Not found`);
     }
-    res.status(200).json({
-        message,
-        status: "success",
-        data: {
-            contact
-        }
-    });
+    res.status(200).json(result);
 };
 
 export const createContactController = async (req, res) => {
+    if (!req.body) {
+        throw HttpError(400, `Body can't be empty`);
+    }
     const { name, email, phone } = req.body;
-    const contact = await addContact(name, email, phone);
-    res.status(201).json({
-        message: "Contact created successfully",
-        status: "success",
-        data: {
-            contact
-        }
-    });
+    const result = await addContact(name, email, phone);
+    res.status(201).json(result);
 };
 
 export const updateContactController = async (req, res) => {
     const { id } = req.params;
+    if (!req.body) {
+        throw HttpError(400, `Body can't be empty`);
+    }
     const updatedContact = req.body;
 
-    const contact = await updateContact(id, updatedContact);
-    const message = contact ? `Contact with id: ${id} updated successfully` : `Contact with id: ${id} not found`;
-    if (!contact) {
-        return res.status(404).json({
-            message,
-            status: "error",
-        });
+    const result = await updateContact(id, updatedContact);
+    if (!result) {
+        throw HttpError(404, `Not found`);
     }
-    res.status(200).json({
-        message,
-        status: "success",
-        data: {
-            contact
-        }
-    });
+    res.status(200).json(result);
 };
+
+
+export default {
+    getAllContactsController: ctrlWrapper(getAllContactsController),
+    getOneContactController: ctrlWrapper(getOneContactController),
+    deleteContactController: ctrlWrapper(deleteContactController),
+    createContactController: ctrlWrapper(createContactController),
+    updateContactController: ctrlWrapper(updateContactController),
+}
