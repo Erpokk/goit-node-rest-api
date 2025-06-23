@@ -13,7 +13,7 @@ export const getOneContactController = async (req, res) => {
     if (!contact) {
         throw HttpError(404, `Not found`);
     }
-    res.status(200).json(result);
+    res.status(200).json(contact);
 };
 
 export const deleteContactController = async (req, res) => {
