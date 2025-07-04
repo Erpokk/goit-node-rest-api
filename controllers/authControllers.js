@@ -39,6 +39,7 @@ export const updateAvatar = async (req, res) => {
         throw HttpError(404, "No file uploaded");
     }
 
+
     try {
         let avatarURL = null;
         const {path: oldPath, filename} = req.file;
@@ -48,7 +49,10 @@ export const updateAvatar = async (req, res) => {
 
         await authServices.updateAvatar(id, avatarURL);
 
-        res.json({avatarURL});
+        res.json({
+            avatarURL,
+            fullAvatarURL: `http://localhost:${process.env.PORT}/avatars/${filename}`
+        });
     } catch (error) {
         await unlink(oldPath);
         throw HttpError(500);
