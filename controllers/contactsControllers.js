@@ -1,14 +1,16 @@
 import { ctrlWrapper, HttpError } from "../helpers/index.js";
 import { updateContact, updateStatusContact, listContacts, getContactById, deleteContact, addContact } from "../services/contactsServices.js";
 
-export const getAllContactsController = async (req, res) => {
-    const result = await listContacts();
+const getAllContactsController = async (req, res) => {
+    const {id} = req.user;
+    const result = await listContacts(id);
     res.status(200).json(result);
 };
 
-export const getOneContactController = async (req, res) => {
+const getOneContactController = async (req, res) => {
     const { id } = req.params;
-    const contact = await getContactById(id);
+    const {id: owner} = req.user;
+    const contact = await getContactById(id, owner);
 
     if (!contact) {
         throw HttpError(404, `Not found`);
@@ -16,28 +18,30 @@ export const getOneContactController = async (req, res) => {
     res.status(200).json(contact);
 };
 
-export const deleteContactController = async (req, res) => {
+const deleteContactController = async (req, res) => {
     const { id } = req.params;
-    const contact = await deleteContact(id);
+    const {id: owner} = req.user;
+    const contact = await deleteContact(id, owner);
     if (!contact) {
         throw HttpError(404, `Not found`);
     }
     res.status(200).json(contact);
 };
 
-export const createContactController = async (req, res) => {
+const createContactController = async (req, res) => {
+    const {id} = req.user;
     if (!req.body) {
         throw HttpError(400, `Body can't be empty`);
     }
     const { name, email, phone } = req.body;
-    const newContact = await addContact({ name, email, phone });
+    const newContact = await addContact({ name, email, phone, owner: id });
     res.status(201).json(newContact);
 };
 
-export const updateContactController = async (req, res) => {
-
+const updateContactController = async (req, res) => {
     const {id} = req.params;
-    const result = await updateContact(id, req.body);
+    const {id: owner} = req.user;
+    const result = await updateContact(id, req.body, owner);
     if (!result) {
         throw HttpError(404, "Not found");
     }
@@ -46,10 +50,11 @@ export const updateContactController = async (req, res) => {
 };
 
 
-export const updateStatusContactController = async (req, res) => {
+const updateStatusContactController = async (req, res) => {
     const {id} = req.params;
     const {favorite} = req.body;
-    const result = await updateStatusContact(id, {favorite});
+    const {id: owner} = req.user;
+    const result = await updateStatusContact(id, {favorite}, owner);
     if (!result) {
         throw HttpError(404, "Not found");
     }

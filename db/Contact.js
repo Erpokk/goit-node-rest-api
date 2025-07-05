@@ -1,8 +1,14 @@
-import { DataTypes } from "sequelize";
+import {DataTypes, Model} from "sequelize";
+import { emailRegexp } from "../schemas/authSchemas.js";
 import sequelize from "./sequelize.js";
+import User from "./User.js";
 
-const Contact = sequelize.define(
-    'contacts', {
+
+
+class Contact extends Model {
+}
+
+Contact.init({
     name: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -10,6 +16,7 @@ const Contact = sequelize.define(
     email: {
         type: DataTypes.STRING,
         allowNull: false,
+        match: emailRegexp
     },
     phone: {
         type: DataTypes.STRING,
@@ -19,9 +26,21 @@ const Contact = sequelize.define(
         type: DataTypes.BOOLEAN,
         defaultValue: false,
     },
-}
-);
-
-Contact.sync();
+    owner: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: User,
+            key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+    },
+},
+{
+    sequelize,
+    modelName: "contact",
+    tableName: "contacts",
+});
 
 export default Contact;
