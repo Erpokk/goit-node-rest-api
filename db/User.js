@@ -1,4 +1,4 @@
-import {DataTypes, Model} from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import sequelize from "./sequelize.js";
 import { emailRegexp } from "../schemas/authSchemas.js";
 
@@ -31,7 +31,14 @@ User.init(
     },
     avatarURL: {
       type: DataTypes.STRING,
-    }
+    },
+    verificationToken: {
+      type: DataTypes.STRING,
+    },
+    verify: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   },
   {
     sequelize,
