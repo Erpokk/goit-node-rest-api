@@ -14,6 +14,7 @@ export const createContactSchema = Joi.object({
     'string.empty': 'Phone is required',
     'string.pattern.base': 'Phone must be in format (123) 456-7890',
   }),
+  favorite: Joi.boolean(),
 }).min(1).messages({
   'object.min': 'Body must have at least one field'
 })
@@ -29,6 +30,15 @@ export const updateContactSchema = Joi.object({
   phone: Joi.string().pattern(/^\(\d{3}\)\s*\d{3}-\d{4}$/).messages({
     'string.pattern.base': 'Phone must be in format (123) 456-7890',
   }),
+  favorite: Joi.boolean(),
 }).min(1).messages({
   'object.min': 'Body must have at least one field'
+})
+
+export const updateStatusContactSchema = Joi.object({
+  favorite: Joi.boolean().required().messages({
+    'any.required': 'Favorite is required',
+  }),
+}).min(1).messages({
+  'object.min': 'Body must have favorite field'
 })
